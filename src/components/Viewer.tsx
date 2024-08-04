@@ -4,7 +4,7 @@ import { deleteItem } from '../utility';
 import { Popup } from './Popup';
 import { UpdateItemForm } from './UpdateItemForm';
 import { Container, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { Add, Delete, Edit, Update } from '@mui/icons-material';
+import { Add, Delete, Edit } from '@mui/icons-material';
 
 type ViewerProps = {
   items: Item[];
