@@ -19,7 +19,7 @@ export function Popup({ children, active }: PopupProps) {
         width: '100%',
         height: '100vh',
         background: 'white',
-        zIndex: '1',
+        zIndex: '10000000',
       }}
     >
       <div

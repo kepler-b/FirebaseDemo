@@ -5,9 +5,12 @@ export interface Item {
 }
 
 export interface User {
-  id: string;
-  name: string;
-  email: string;
+  email: string,
+  displayName: string,
+  emailVerified: boolean,
+  uid: string,
+  photoURL: string | null,
+  isAnonymous: boolean,
   items?: Item[];
   friends?: string[];
 }

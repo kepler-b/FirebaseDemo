@@ -1,42 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import './App.css';
-import { Viewer } from './components/Viewer';
 import { User } from './types';
-import { getItems, addUserDetails, getUserFromDB } from './utility';
-import { UserForm } from './components/UserForm';
-import { ItemForm } from './components/ItemForm';
-import { useAppDispatch, useAppSelector } from './hooks';
-import { setItems, setUser } from './store';
-import { FriendListForm } from './components/FriendListForm';
-import UserProfile from './components/UserProfile';
-import Button from '@mui/material/Button';
-import { signInAnonymously } from 'firebase/auth';
-import { auth } from './firebase.config';
+import { getUserFromDB } from './utility';
+import { useAppDispatch } from './hooks';
+import { setUser } from './store';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/login_page';
+import SignupPage from './pages/signup_page';
+import { AuthProvider } from './contexts/AuthContext';
+import HomePageRoute from './pages/homepage';
+import UserProfile from './pages/UserProfile';
+import ItemsPage from './pages/items_page';
 
 function App() {
-  const user = useAppSelector((state) => state.userReducer.user);
-  const items = useAppSelector((state) => state.itemsReducer.items);
 
   const dispatch = useAppDispatch();
-  const [friendListPopUpActivation, setFriendListPopUpActivation] =
-    useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    getItems(user.id, (itms) => dispatch(setItems(itms)));
-  }, [user]);
-
-  async function handleFormSubmission(user: User) {
-    const addedUser = await addUserDetails(user);
-    alert('User added');
-    dispatch(setUser(addedUser));
-  }
-
+  
   useEffect(() => {
     const userData = localStorage.getItem('userId');
     if (!userData) return;
     const localUser = JSON.parse(userData) as User;
-    getUserFromDB(localUser.id)
+    getUserFromDB(localUser.uid)
       .then(({user, error}) => {
         console.assert(!error, error);
         if (!error)
@@ -45,34 +29,19 @@ function App() {
     dispatch(setUser(localUser));
   }, []);
 
-  async function signIn() {
-    const credentials = await signInAnonymously(auth);
-    console.log(credentials.user);
-  }
-
   return (
-    <>
-      <Button onClick={() => signIn()} >Authenticate With Firebase</Button>
-      {user ? '' : <UserForm onSubmit={handleFormSubmission} />}
-      {user ? <UserProfile /> : ""}
-      {user ? <ItemForm userId={user.id} /> : ''}
-      {user ? <Viewer userId={user.id} items={items} /> : ''}
-
-      {user ? (
-        <>
-          <button onClick={() => setFriendListPopUpActivation(true)}>
-            Activate FriendList Search
-          </button>
-          <FriendListForm
-            userId={user.id}
-            isActivated={friendListPopUpActivation}
-            deactivation={() => setFriendListPopUpActivation(false)}
-          />
-        </>
-      ) : (
-        ''
-      )}
-    </>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/signup' element={<SignupPage />} />
+          <Route Component={HomePageRoute}>
+            <Route path="/" Component={ItemsPage} />
+            <Route path="/profile" Component={UserProfile} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -1,30 +1,33 @@
-# React + TypeScript + Vite
+# Firebase Demo Learning App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Technologies Used
 
-Currently, two official plugins are available:
+1. Firebase
+2. React
+3. Redux Toolkit
+4. MUI (Material UI)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#### Previews
 
-## Expanding the ESLint configuration
+##### Login Page
+![Login Page](./src/demos/login.png)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
+##### Signup Page
+![Login Page](./src/demos/signup.png)
 
-- Configure the top-level `parserOptions` property like this:
+---
+##### User Profile
+![User Profile Page](./src/demos/user_profile.png)
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+---
+##### Items Viewer
+![Items Viewer Page](./src/demos/items_viewer.png)
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+---
+##### Items Form
+![User Profile Page](./src/demos/item_form.png)
+
+---
+##### Friend Search Form
+![User Profile Page](./src/demos/friend_serach_form.png)

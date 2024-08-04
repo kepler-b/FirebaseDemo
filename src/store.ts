@@ -29,7 +29,7 @@ export const userSlice = createSlice({
     initialState: userSliceInitialState, 
     name: "user",
     reducers: {
-        setUser(state, action: PayloadAction<User>) {
+        setUser(state, action: PayloadAction<User | null>) {
             state.user = action.payload
         }
     }
@@ -53,7 +53,7 @@ export const friendsListSlice = createSlice({
             state.friends = action.payload;
         },
         setFriendItems(state, action: PayloadAction<{ friendId: string, items: Items}>) {
-            const userIndex = state.friends.findIndex((user) => user.id === action.payload.friendId);
+            const userIndex = state.friends.findIndex((user) => user.uid === action.payload.friendId);
             if (userIndex > -1) {
                 state.friends[userIndex].items = action.payload.items;
             }

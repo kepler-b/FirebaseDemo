@@ -74,8 +74,7 @@ export async function deleteItem(userId: string, deleteItemId: string) {
 
 export async function addUserDetails(user: User) {
   const userCollection = collection(firestore, `users`);
-  localStorage.setItem('userId', JSON.stringify(user));
-  await setDoc(doc(userCollection, user.id), user);
+  await setDoc(doc(userCollection, user.uid), user);
   return user;
 }
 
@@ -101,10 +100,10 @@ export async function addUserToFriendList(userId: string, user: User) {
     if (userDoc.exists()) {
       // const currentFriends = userDoc.data()?.friends || [];
       await updateDoc(userRef, {
-        friends: arrayUnion(user.id),
+        friends: arrayUnion(user.uid),
       });
 
-      alert(`${user.name} added to friend list`);
+      alert(`${user.displayName} added to friend list`);
     } else {
       console.error('User does not exist');
     }
@@ -129,4 +128,16 @@ export async function removeFriendFromList(userId: string, friendId: string) {
   } catch (error) {
     console.error('Error adding user to friend list: ', error);
   }
+}
+
+
+export function checkIfEmpty(values: Record<string, any>) {
+  const keys = Object.keys(values);
+  for (const key of keys) {
+    if (!values[key]) {
+      alert(`Value of ${key} not present`);
+      return true;
+    }
+  }
+  return false;
 }

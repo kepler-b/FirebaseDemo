@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Item, User } from "../types";
 import { getItems, getUserFromDB } from "../utility";
 import { setFriendItems, setFriends } from "../store";
-import { ArrowDropDown, ArrowDropUp } from "@mui/icons-material";
+import { ArrowDropDown, ArrowDropUp, ExitToApp, Search } from "@mui/icons-material";
+import { FriendListForm } from "../components/FriendListForm";
+import { signOutFromApp, useAuth } from "../contexts/AuthContext";
 
 function RenderItems({ items, showItems }: { items?: Item[], showItems: boolean }) {
 
@@ -47,7 +49,7 @@ export function FriendListTableRow({ friend, index }: { friend: User, index: num
         setShowItems(true);
         if (!friend.items){
             setItemLoadingStatus(true);
-            await getItems(friend.id, (items) => dispatch(setFriendItems({ friendId: friend.id, items })));
+            await getItems(friend.uid, (items) => dispatch(setFriendItems({ friendId: friend.uid, items })));
             setItemLoadingStatus(false);
         }
     }
@@ -58,12 +60,12 @@ export function FriendListTableRow({ friend, index }: { friend: User, index: num
 
     return (
         <>
-            <TableRow key={friend.id}>
+            <TableRow key={friend.uid}>
                 <TableCell>
                     {index}
                 </TableCell>
                 <TableCell>
-                    {friend.name}
+                    {friend.displayName}
                 </TableCell>
                 <TableCell>
                     {!showItems? <Button onClick={loadItems} endIcon={<ArrowDropDown />}>
@@ -86,9 +88,10 @@ export function FriendListTableRow({ friend, index }: { friend: User, index: num
 export default function UserProfile() {
     const user = useAppSelector(state => state.userReducer.user);
     const dispatch = useAppDispatch();
+    const { setCurrentUser } = useAuth();
     const friendsList = useAppSelector(state => state.friendsReducer.friends);
     const [friendListLoadingStatus, setFriendListLoadingStatus] = useState(false);
-
+    const [friendListPopUpActivation, setFriendListPopUpActivation] = useState(false);
 
     function friendExists(): boolean {
         return !!user && !!user.friends && user.friends.length > 0;
@@ -107,10 +110,24 @@ export default function UserProfile() {
     return (
         <Stack border={"1px solid black"} margin={0} padding={"20px"}>
             <Typography variant="h5" fontWeight="bold">UserProfile</Typography>
-            <Box><Typography variant="h6" fontWeight={"bold"}>Id: <Typography component="span">{user?.id}</Typography> </Typography></Box>
-            <Box><Typography variant="h6" fontWeight={"bold"}>Username: <Typography component="span">{user?.name} </Typography></Typography></Box>
+            <Box><Typography variant="h6" fontWeight={"bold"}>Id: <Typography component="span">{user?.uid}</Typography> </Typography></Box>
+            <Box><Typography variant="h6" fontWeight={"bold"}>Username: <Typography component="span">{user?.displayName} </Typography></Typography></Box>
             <Box><Typography variant="h6" fontWeight={"bold"}>Email: <Typography component="span">{user?.email}</Typography></Typography></Box>
             <Box><Typography variant="h6" fontWeight={"bold"}>Total Friends: <Typography component="span">{user?.friends?.length}</Typography></Typography></Box>
+
+            <Box sx={{display:"flex", gap: "20px"}}>
+                <Button variant={"contained"} sx={{margin:"20px 0"}} startIcon={<ExitToApp />} onClick={async () => {await signOutFromApp(); setCurrentUser!(null);}}>
+                    Signout
+                </Button>
+                <Button sx={{margin:"20px 0"}} startIcon={<Search />} onClick={() => setFriendListPopUpActivation(true)}>
+                    Search Friends
+                </Button>
+            </Box>
+            <FriendListForm
+                userId={user!.uid}
+                isActivated={friendListPopUpActivation}
+                deactivation={() => setFriendListPopUpActivation(false)}
+            />
 
             {friendExists() ? <Box marginY={"12px"}><Button variant="outlined" onClick={loadFriends} disabled={friendListLoadingStatus}>Get Friends List</Button></Box> : ""}
 
@@ -127,7 +144,7 @@ export default function UserProfile() {
                     </TableHead>
                     <TableBody>
                         {
-                            friendsList.map((friend, index) => (<FriendListTableRow key={friend.id} friend={friend} index={index + 1} />))
+                            friendsList.map((friend, index) => (<FriendListTableRow key={friend.uid} friend={friend} index={index + 1} />))
                         }
                     </TableBody>
                 </Table>

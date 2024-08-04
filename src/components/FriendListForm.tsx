@@ -13,6 +13,8 @@ import styles from './friendlist.module.css';
 import { Popup } from './Popup';
 import { addUserToFriendList } from '../utility';
 import { useAppSelector } from '../hooks';
+import { IconButton } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
 export function FriendListForm({
   userId,
@@ -45,9 +47,9 @@ export function FriendListForm({
     try {
       const userQuery = query(
         collection(firestore, 'users'),
-        where('name', '>=', value),
-        where('name', '<=', value + '\uf8ff'),
-        orderBy('name'),
+        where('displayName', '>=', value),
+        where('displayName', '<=', value + '\uf8ff'),
+        orderBy('displayName'),
         limit(10)
       );
 
@@ -56,7 +58,7 @@ export function FriendListForm({
         id: doc.id,
         ...(doc.data() as Omit<User, 'id'>),
       }));
-      setQueriedResult(usersList.filter((v) => v.id !== user?.id));
+      setQueriedResult(usersList.filter((v) => v.id !== user?.uid));
     } catch (error) {
       console.error('Error fetching users: ', error);
     }
@@ -64,12 +66,12 @@ export function FriendListForm({
 
   return (
     <Popup active={isActivated}>
-      <button
-        style={{ position: 'absolute', right: '12px', top: '12px' }}
+      <IconButton
+        style={{ position: 'absolute', right: '12px', top: '12px', zIndex: 1 }}
         onClick={() => deactivation()}
       >
-        Close
-      </button>
+        <Close />
+      </IconButton>
       <div className={styles.friendlistformcontianer}>
         <form>
           <div className={styles.searchField}>
@@ -83,14 +85,14 @@ export function FriendListForm({
           {queryiedResult.length > 0 ? (
             <ul className={styles.searchList}>
               {queryiedResult.map((user) => (
-                <li key={user.id}>
+                <li key={user.uid}>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       addToFriendList(user);
                     }}
                   >
-                    {user.name}
+                    {user.displayName}
                   </button>
                 </li>
               ))}
